@@ -1,71 +1,54 @@
-/*!
- * Clean Blog v1.0.0 (http://startbootstrap.com)
- * Copyright 2015 Start Bootstrap
- * Licensed under Apache 2.0 (https://github.com/IronSummitMedia/startbootstrap/blob/gh-pages/LICENSE)
- */
-
-// Tooltip Init
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
-
-// responsive tables
 $(document).ready(function() {
-    $("table").each(function(){
-      if ($(this).parent().get(0).tagName != 'FIGURE') {
-        $(this).addClass("table table-responsive table-striped table-hover");
-        $(this).find("th").addClass("text-center");
-      }
+	$(window).scroll(function(){  //只要窗口滚动,就触发下面代码 
+        var scrollt = document.documentElement.scrollTop + document.body.scrollTop; //获取滚动后的高度 
+        if(scrollt>200){  //判断滚动后高度超过200px
+            $("#gotop").fadeIn(400); //淡出
+			if($(window).width() >= 1200){
+				$(".navbar").stop().fadeTo(400, 0.2);
+			}
+        }else{
+            $("#gotop").fadeOut(400); //如果返回或者没有超过,就淡入.必须加上stop()停止之前动画,否则会出现闪动
+            if($(window).width() >= 1200){
+				$(".navbar").stop().fadeTo(400, 1);
+            }
+        }
     });
+    $("#gotop").click(function(){ //当点击标签的时候,使用animate在200毫秒的时间内,滚到顶部        
+		$("html,body").animate({scrollTop:"0px"},200);
+    });
+	$(".navbar").mouseenter(function(){
+		$(".navbar").fadeTo(100, 1);
+	});
+    $(".navbar").mouseleave(function(){
+		var scrollt = document.documentElement.scrollTop + document.body.scrollTop;
+		if (scrollt>200) {
+			$(".navbar").fadeTo(100, 0.2);
+		}
+	});
+
+	replaceMeta();
+
+	$(window).resize(function(){
+		replaceMeta();
+	});
 });
 
-// responsive embed videos
-$(document).ready(function () {
-    $('iframe[src*="youtube.com"]').wrap('<div class="embed-responsive embed-responsive-16by9"></div>');
-    $('iframe[src*="youtube.com"]').addClass('embed-responsive-item');
-    $('iframe[src*="vimeo.com"]').wrap('<div class="embed-responsive embed-responsive-16by9"></div>');
-    $('iframe[src*="vimeo.com"]').addClass('embed-responsive-item');
-    $('img').addClass('img-responsive-center')
-});
-
-// whether a post
-function isPages(attr){
-    var currentBoolean = document.querySelector('.navbar.header-navbar').getAttribute(attr);
-    if(currentBoolean === 'true'){return true;}
-    return false;
+replaceMeta = function(){
+	if ($(window).width() < 980) {
+		if ($("#side_meta #post_meta").length>0) {
+			$("#post_meta").appendTo("#top_meta");
+		}
+		if ($("#sidebar #site_search").length>0) {
+			$("#site_search").appendTo("#top_search");
+			$("#site_search #st-search-input").css("width", "95%");
+		}
+	} else {
+		if ($("#top_meta #post_meta").length>0) {
+			$("#post_meta").appendTo("#side_meta");
+		}
+		if ($("#top_search #site_search").length>0) {
+			$("#site_search").prependTo("#sidebar");
+			$("#site_search #st-search-input").css("width", "85%");
+		}
+	}
 }
-/*
-    scroll function
-    3 parameters
-        1. a DOM object
-        2 a class for targeted object
-        3 height when acctivated (optional. default: the height of the DOM)
-*/
-function scrollCheck(scrollTarget, toggleClass, scrollHeight){
-    document.addEventListener('scroll',function(){
-    var currentTop = window.pageYOffset;
-        currentTop > (scrollHeight||scrollTarget.clientHeight)
-        ?scrollTarget.classList.add(toggleClass)
-        :scrollTarget.classList.remove(toggleClass)
-    })
-}
-
-
-
-/*
-* Steps
-* 1. get the content of h1
-* 2. scroll and appear fixed navbar
-* 3. the content of h1 is shown center at the top of the page
-* */
-
-(function(){
-    if (isPages('data-ispost')){
-        var navbar = document.querySelector('.navbar-custom');
-        var introHeader = document.querySelector('.intro-header').offsetHeight;
-        var introHeader = introHeader > 597 ? introHeader : 500;
-        var toc = document.querySelector('.toc-wrap');
-        scrollCheck(toc,'toc-fixed',introHeader-60);
-        // scrollCheck(navbar,'is-fixed');
-    }
-})();
